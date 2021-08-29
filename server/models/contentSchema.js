@@ -28,6 +28,13 @@ const contentSchema = new mongoose.Schema({
             },
         },
     ],
+    saves: [
+        {
+            savedBy: {
+                type: String,
+            },
+        },
+    ],
 
 });
 //Likes Storing function
@@ -37,6 +44,17 @@ contentSchema.methods.addLike = async function (likedBy) {
         this.likes = this.likes.concat({ likedBy });
         await this.save();
         return this.likes;
+    } catch (error) {
+        console.log(error);
+    }
+};
+//Saves Storing function
+//-------------------------
+contentSchema.methods.addSave = async function (savedBy) {
+    try {
+        this.saves = this.saves.concat({ savedBy });
+        await this.save();
+        return this.saves;
     } catch (error) {
         console.log(error);
     }

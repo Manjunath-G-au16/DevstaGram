@@ -142,4 +142,37 @@ contentRouter.delete("/deleteLike/:id", Authenticate, async (req, res) => {
         res.status(500).send(err)
     }
 });
+//Saves Section
+//--------------------
+contentRouter.post("/saves", Authenticate, async (req, res) => {
+    try {
+        const { _id } = req.body;
+        const savedBy = req.rootUser.email
+        const userSaves = await Content.findOne({ _id: _id });
+        if (userSaves) {
+            console.log(savedBy);
+            const userSavesm = await userSaves.addSave(
+                savedBy
+            );
+            await userSaves.save();
+            res.status(201).json({ message: "User saves data sent successfully" });
+        }
+    } catch (error) {
+        console.log(error);
+    }
+});
+//Delete Save
+//--------------------
+contentRouter.delete("/deleteSave/:id", Authenticate, async (req, res) => {
+    try {
+        const _id = req.params.id
+        const savedBy = req.rootUser.email
+        const rootUser = await Content.updateOne(
+            { '_id': _id },
+            { $pull: { saves: { savedBy: savedBy } } });
+        res.status(200).json({ message: "Content deleted successfully" })
+    } catch (err) {
+        res.status(500).send(err)
+    }
+});
 module.exports = contentRouter;
