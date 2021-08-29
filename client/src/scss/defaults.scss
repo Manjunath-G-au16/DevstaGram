@@ -1,0 +1,55 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+@mixin center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@mixin grid-center {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}
+@mixin grid($col-start, $col-end, $row-start, $row-end) {
+  grid-column-start: $col-start;
+  grid-column-end: $col-end;
+  grid-row-start: $row-start;
+  grid-row-end: $row-end;
+}
+@mixin button {
+  background: $primary-clr;
+  color: $clrWhite;
+  padding: 10px 20px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-top-left-radius: 10px;
+}
+@mixin button-italic {
+  background: $primary-clr;
+  color: $clrWhite;
+  padding: 10px 20px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-top-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+@mixin button-secondary {
+  background: transparent;
+  color: $clrGrey;
+  padding: 10px 20px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+$i: unquote("!important");

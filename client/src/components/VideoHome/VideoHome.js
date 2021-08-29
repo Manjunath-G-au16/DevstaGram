@@ -8,6 +8,7 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 
 const VideoHome = () => {
     const [videos, setVideos] = useState([])
+    const [more, setMore] = useState([])
     const [video, setVideo] = useState({})
     const [user, setUser] = useState({})
     const [commId, setCommId] = useState("")
@@ -16,7 +17,7 @@ const VideoHome = () => {
     const [descActive, setDescActive] = useState(false)
     const [replyActive, setReplyActive] = useState(false)
     const [rID, setRID] = useState("")
-    const [active, setActive] = useState()
+    const [active, setActive] = useState(true)
     const [loading, setLoading] = useState(true)
     const [userComment, setUserComment] = useState("")
     const [userReply, setUserReply] = useState("")
@@ -31,12 +32,13 @@ const VideoHome = () => {
     const handleReplyToggle = () => {
         setReplyActive(!replyActive);
     }
-    const handleLike = () => {
-        setLikeActive(!likeActive);
+    const handleMore = (id) => {
+        let newMore = [...more]
+        newMore.push(id)
+        setMore(newMore)
     }
 
     const fetchVideos = async () => {
-        setActive(true)
         try {
             const res = await fetch("/contents", {
                 method: "GET",
@@ -49,9 +51,6 @@ const VideoHome = () => {
             const data = await res.json();
             console.log(data);
             setVideos(data);
-            // if (data.likes.filter(e => e['likedBy'] === 'modimanju2019@gmail.com').length > 0) {
-            //     console.log("yyyyyyyyyyyyyyyyy");
-            // }
             setLoading(false);
             if (!res.status === 200) {
                 const error = new Error(res.error);
@@ -62,6 +61,8 @@ const VideoHome = () => {
         }
     };
     const fetchVideo = async (ID) => {
+        setActive(false)
+        setLoading(true)
         try {
             const res = await fetch(`/content/${ID}`, {
                 method: "GET",
@@ -73,6 +74,8 @@ const VideoHome = () => {
             });
             const data = await res.json();
             setVideo(data);
+            setLoading(false)
+            fetchComments(ID)
             if (!res.status === 200) {
                 const error = new Error(res.error);
                 throw error;
@@ -145,6 +148,7 @@ const VideoHome = () => {
             console.log("Comment not sent");
         } else {
             console.log("Comment sent");
+            setUserComment("")
             fetchComments(video._id);
         }
     };
@@ -304,126 +308,85 @@ const VideoHome = () => {
             {loading && <div className="loaderx"><ScaleLoader
                 color={"#2b343b"} loading={loading} size={0} /></div>}
             {(active === true) ?
-                <div className="video-home">
+                <div className="content-home">
                     {videos.map((item, index) => {
                         return (
                             <div key={index} className="video-con">
                                 <div className="title">
-                                    <h3>{item.description}</h3>
+                                    <h3>{item.name}</h3>
                                 </div>
                                 <div className="video">
                                     <img src={item.url} alt="" />
                                 </div>
-                                <h5>{item.likes.length}</h5>
-                                <button
-                                    onClick={(item.likes.filter(e => e['likedBy'] === user.email).length > 0) || (item.status === "liked")
-                                        ? () => deleteLike(item._id)
-                                        : () => postLike(item._id)
-                                    }>Like</button>
+                                <div className="btn-sec">
+                                    <div className="sec1">
+                                        <div className="like-btn">
+                                            <i className={(item.likes.filter(e => e['likedBy'] === user.email).length > 0) || (item.status === "liked") ?
+                                                "fas fa-heart liked" : "fas fa-heart unliked"}
+                                                onClick={(item.likes.filter(e => e['likedBy'] === user.email).length > 0) || (item.status === "liked")
+                                                    ? () => deleteLike(item._id)
+                                                    : () => postLike(item._id)
+                                                }>
+                                            </i>
+                                        </div>
+                                        <div className="comment-btn">
+                                            <i className="far fa-comment" onClick={() => { fetchVideo(item._id); }}></i>
+                                        </div>
+                                    </div>
+                                    <div className="sec2">
+                                        <i className="fas fa-bookmark"></i>
+                                    </div>
+                                </div>
+                                <h5>{item.likes.length} {(item.likes.length === 1) ? "like" : "likes"} </h5>
+                                <div className="cnt-sec">
+                                    <h5 className={(more.includes(item._id) === true) && "more"}>{item.name} {item.description}</h5>
+                                    <h6 onClick={() => handleMore(item._id)}>{(more.includes(item._id) === true) ? "" : "more"}</h6>
+                                </div>
                             </div>
                         )
                     })
                     }
                 </div> :
-                <div className="onevideo">
-                    <div className="btn">
+                <div className="onepost">
+                    {/* <div className="btn">
                         <button onClick={() => setActive(true)}>Back</button>
-                    </div>
-                    <div className="video">
-                        <video src={video.url} controls></video>
-                    </div>
-                    <div className="title">
-                        <h3>{video.title}</h3>
-                        <button onClick={handleDescToggle}>Description</button>
-                    </div>
-                    {(descActive === true) &&
-                        <div className="desc">
-                            <h5>{video.description}</h5>
-                        </div>}
-                    <div className="comment-sec">
-                        <input type="text"
-                            name="comment"
-                            placeholder="Type your comment here..."
-                            onChange={(e) => setUserComment(e.target.value)}
-                            required
-                        />
-                        <button onClick={postComment}>Comment</button>
-                    </div>
-                    <div className="comments-sec">
-                        {comments.slice(0).reverse().map((item, index) => {
-                            return (
-                                <div className="comments" key={index}>
-                                    {(commId === item._id) ?
-                                        <>
-                                            <input type="text"
-                                                name="comment"
-                                                placeholder="Comment"
-                                                defaultValue={item.comment}
-                                                onChange={(e) => setUpdateComment(e.target.value)}
-                                                required
-                                            />
-                                            <div className="btn">
-                                                <button onClick={() => editComment(item._id)}>Update</button>
-                                                <button onClick={() => setCommId("")}>Cancel</button>
-                                            </div>
-                                        </>
-                                        :
-                                        <div className="comment-details">
-                                            <div className="user">
-                                                <div className="user-logo">
-                                                    <h3>{[...item.name].reverse().splice(-1)}</h3>
-                                                    <div className="user-comment">
-                                                        <h4>{item.name}</h4>
-                                                        <h5>{item.comment}</h5>
-                                                    </div>
-                                                </div>
-                                                {
-                                                    user.email === item.email &&
-                                                    <div className="btn">
-                                                        <button onClick={() => setCommId(item._id)}>Edit</button>
-                                                        <button onClick={() => delComment(item._id)}>Delete</button>
-                                                    </div>
-                                                }
-                                            </div>
-                                            <div className="reply-con">
-                                                <div className="reply-sec">
-                                                    <input type="text"
-                                                        name="reply"
-                                                        placeholder="Reply"
-                                                        onChange={(e) => setUserReply(e.target.value)}
-                                                        required
-                                                    />
-                                                    <div className="btnR">
-                                                        <button onClick={() => postReply(item._id)}>Send</button>
-                                                        <button onClick={() => { fetchReplys(item._id); setRID(item._id); handleReplyToggle() }}>Replies</button>
-                                                    </div>
-                                                </div>
-                                                {(replyId === item._id && replyActive === true) &&
-                                                    replys.slice(0).reverse().map((item, index) => {
-                                                        return (
-                                                            <div className="userR">
-                                                                <div className="user-logo">
-                                                                    <h4>{[...item.name].reverse().splice(-1)}</h4>
-                                                                    <div className="user-comment">
-                                                                        <h5>{item.name}</h5>
-                                                                        <h6>{item.reply}</h6>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="btn">
-                                                                    {/* <button onClick={() => setCommId(item._id)}>Edit</button> */}
-                                                                    <button onClick={() => delReply(item._id)}>Delete</button>
-                                                                </div>
-                                                            </div>
-                                                        )
-                                                    })
-                                                }
-                                            </div>
-                                        </div>
-                                    }
+                    </div> */}
+                    <div className="sec">
+                        <div className="sec-video">
+                            <img src={video.url} alt="" />
+                        </div>
+                        <div className="sec-cnt">
+                            <div className="sec-details">
+                                <div className="title">
+                                    <h3>{video.name}</h3>
                                 </div>
-                            )
-                        })}
+
+                                <div className="cnt-details">
+                                    <div className="cnt-sec">
+                                        <h5 className="more">{video.name} <span>{video.description}</span> </h5>
+                                    </div>
+                                    {comments.slice(0).reverse().map((item, index) => {
+                                        return (
+                                            <div className="cmt">
+                                                <h4>{[...item.name].reverse().splice(-1)}</h4>
+                                                <h5>{item.name} <span>
+                                                    {item.comment}</span></h5>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                            <div className="comment-sec">
+                                <input type="text"
+                                    name="comment"
+                                    value={userComment}
+                                    placeholder="Type your comment here..."
+                                    onChange={(e) => setUserComment(e.target.value)}
+                                    required
+                                />
+                                <button disabled={userComment.length < 1} onClick={postComment}>post</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             }

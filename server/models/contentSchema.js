@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const contentSchema = new mongoose.Schema({
-    contentBy: {
+    name: {
         type: String,
         required: true
     },
-    title: {
+    contentBy: {
         type: String,
         required: true
     },
@@ -19,10 +19,28 @@ const contentSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        default: "approved",
-    }
-});
+        default: "pending",
+    },
+    likes: [
+        {
+            likedBy: {
+                type: String,
+            },
+        },
+    ],
 
+});
+//Likes Storing function
+//-------------------------
+contentSchema.methods.addLike = async function (likedBy) {
+    try {
+        this.likes = this.likes.concat({ likedBy });
+        await this.save();
+        return this.likes;
+    } catch (error) {
+        console.log(error);
+    }
+};
 const Content = mongoose.model("CONTENT", contentSchema);
 
 module.exports = Content;

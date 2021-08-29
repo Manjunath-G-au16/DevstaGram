@@ -9,7 +9,7 @@ contentRouter.use(express.json())
 //-----------------------------------------
 contentRouter.get("/contents", Authenticate, async (req, res) => {
     try {
-        contents = await Content.find({ status: "approved" });
+        contents = await Content.find({ status: "pending" });
         res.status(200).send(contents);
     } catch (err) {
         res.status(500).send(err)
@@ -43,13 +43,14 @@ contentRouter.get("/myContents", Authenticate, async (req, res) => {
 //Upload Content 
 //-----------------------------------------
 contentRouter.post("/uploadContent", Authenticate, async (req, res) => {
+    const name = req.rootUser.name
     const contentBy = req.rootUser.email
-    const { title, description, url, thumbnail } = req.body;
-    if (!title || !description || !url || !thumbnail) {
+    const { description, url } = req.body;
+    if (!description || !url) {
         return res.status(422).json({ Error: "plz fill the fields properly" });
     }
     try {
-        const content = new Content({ contentBy, title, description, url, thumbnail });
+        const content = new Content({ name, contentBy, description, url });
         await content.save();
         res.status(201).json({ message: "Content uploaded successfully" });
     } catch (err) {
@@ -106,6 +107,39 @@ contentRouter.post("/comment/:id", Authenticate, async (req, res) => {
         }
     } catch (error) {
         console.log(error);
+    }
+});
+//Likes Section
+//--------------------
+contentRouter.post("/likes", Authenticate, async (req, res) => {
+    try {
+        const { _id } = req.body;
+        const likedBy = req.rootUser.email
+        const userLikes = await Content.findOne({ _id: _id });
+        if (userLikes) {
+            console.log(likedBy);
+            const userLikesm = await userLikes.addLike(
+                likedBy
+            );
+            await userLikes.save();
+            res.status(201).json({ message: "User likes data sent successfully" });
+        }
+    } catch (error) {
+        console.log(error);
+    }
+});
+//Delete Like
+//--------------------
+contentRouter.delete("/deleteLike/:id", Authenticate, async (req, res) => {
+    try {
+        const _id = req.params.id
+        const likedBy = req.rootUser.email
+        const rootUser = await Content.updateOne(
+            { '_id': _id },
+            { $pull: { likes: { likedBy: likedBy } } });
+        res.status(200).json({ message: "Content deleted successfully" })
+    } catch (err) {
+        res.status(500).send(err)
     }
 });
 module.exports = contentRouter;
