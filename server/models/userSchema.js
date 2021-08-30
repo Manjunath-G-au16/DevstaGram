@@ -15,6 +15,22 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    followers: [
+        {
+            follower: {
+                type: String,
+                required: true,
+            },
+        },
+    ],
+    followings: [
+        {
+            following: {
+                type: String,
+                required: true,
+            },
+        },
+    ],
     tokens: [
         {
             token: {
@@ -33,6 +49,28 @@ userSchema.pre("save", async function (next) {
     }
     next();
 });
+//Followings Storing function
+//-------------------------
+userSchema.methods.addFollowing = async function (following) {
+    try {
+        this.followings = this.followings.concat({ following });
+        await this.following();
+        return this.followings;
+    } catch (error) {
+        console.log(error);
+    }
+};
+//Followers Storing function
+//-------------------------
+userSchema.methods.addFollower = async function (follower) {
+    try {
+        this.followers = this.followers.concat({ follower });
+        await this.follower();
+        return this.followers;
+    } catch (error) {
+        console.log(error);
+    }
+};
 
 //Token Generation
 //----------------

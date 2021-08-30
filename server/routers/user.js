@@ -77,6 +77,51 @@ userRouter.get("/authenticate", Authenticate, async (req, res) => {
         res.status(500).send(err)
     }
 });
+//Likes Section
+//--------------------
+userRouter.post("/followers", Authenticate, async (req, res) => {
+    try {
+        const { email } = req.body;
+        const follower = req.rootUser.email
+        const following = email
+
+        const userFollowers = await User.findOne({ email: email });
+        if (userFollowers) {
+            const userFollowersm = await userFollowers.addFollower(
+                follower
+            );
+            await userFollowers.save();
+            res.status(201).json({ message: "User followers data sent successfully" });
+        }
+        const userFollowings = await User.findOne({ email: follower });
+        if (userFollowings) {
+            const userFollowingsm = await userFollowings.addFollowing(
+                following
+            );
+            await userFollowings.save();
+            res.status(201).json({ message: "User followings data sent successfully" });
+        }
+    } catch (error) {
+        console.log(error);
+    }
+});
+//Delete Follower
+//--------------------
+userRouter.delete("/deleteFollower/:id", Authenticate, async (req, res) => {
+    try {
+        const email = req.params.id
+        const follower = req.rootUser.email
+        const rootUser = await User.updateOne(
+            { 'email': email },
+            { $pull: { followers: { follower: follower } } });
+        const rootUserr = await User.updateOne(
+            { 'email': follower },
+            { $pull: { followings: { following: email } } });
+        res.status(200).json({ message: "Removed follower successfully" })
+    } catch (err) {
+        res.status(500).send(err)
+    }
+});
 //User Logout 
 //--------------------
 userRouter.get("/logout", (req, res) => {
