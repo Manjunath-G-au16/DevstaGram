@@ -245,6 +245,28 @@ const VideoHome = () => {
             setVideos(newVideos)
         }
     };
+    const deleteSave = async (id) => {
+        const res = await fetch(`/deleteSave/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+        const data = await res.json();
+        if (!data) {
+            console.log("Save not sent");
+        } else {
+            console.log("Post Unsaved");
+            let newVideos = [...videos]
+            newVideos.map(item => {
+                if (item._id === id) {
+                    item.saves.length = item.saves.length - 1;
+                    item.saveStatus = "unsaved"
+                }
+            })
+            setVideos(newVideos)
+        }
+    };
     const authenticate = async () => {
         try {
             const res = await fetch("/authenticate", {
@@ -296,6 +318,33 @@ const VideoHome = () => {
             console.log(newVideos);
         }
     };
+    const postSave = async (id) => {
+        const _id = id
+        const res = await fetch('/saves', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                _id
+            }),
+        });
+        const data = await res.json();
+        if (res.status === 422 || !data) {
+            toast.dark("Fill all the fields!");
+        } else {
+            // toast.dark("Post Saved");
+            console.log("Post Saved");
+            let newVideos = [...videos]
+            newVideos.map(item => {
+                if (item._id === id) {
+                    item.saves.length = item.saves.length + 1;
+                    item.saveStatus = "saved"
+                }
+            })
+            setVideos(newVideos)
+        }
+    };
     useEffect(() => {
         authenticate();
     }, [])
@@ -334,7 +383,12 @@ const VideoHome = () => {
                                         </div>
                                     </div>
                                     <div className="sec2">
-                                        <i className="fas fa-bookmark"></i>
+                                        <i className={(item.saves.filter(e => e['savedBy'] === user.email).length > 0) || (item.saveStatus === "saved") ?
+                                            "fas fa-bookmark saved" : "fas fa-bookmark unsaved"}
+                                            onClick={(item.saves.filter(e => e['savedBy'] === user.email).length > 0) || (item.saveStatus === "saved")
+                                                ? () => deleteSave(item._id)
+                                                : () => postSave(item._id)
+                                            }></i>
                                     </div>
                                 </div>
                                 <h5>{item.likes.length} {(item.likes.length === 1) ? "like" : "likes"} </h5>
@@ -371,6 +425,7 @@ const VideoHome = () => {
                                                 <h4>{[...item.name].reverse().splice(-1)}</h4>
                                                 <h5>{item.name} <span>
                                                     {item.comment}</span></h5>
+                                                <i className="fas fa-trash" onClick={() => delComment(item._id)}></i>
                                             </div>
                                         )
                                     })}

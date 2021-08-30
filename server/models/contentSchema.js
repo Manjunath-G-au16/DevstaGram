@@ -21,6 +21,10 @@ const contentSchema = new mongoose.Schema({
         type: String,
         default: "pending",
     },
+    saveStatus: {
+        type: String,
+        default: "pending",
+    },
     likes: [
         {
             likedBy: {

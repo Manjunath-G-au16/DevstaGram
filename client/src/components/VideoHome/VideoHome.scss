@@ -6,6 +6,9 @@
     align-items: center;
     flex-direction: column;
     // gap: 10px;
+    i {
+        cursor: pointer;
+    }
     .video-con {
         width: 20vw;
         display: grid;
@@ -27,6 +30,12 @@
             }
             .liked {
                 color: red;
+            }
+            .saved {
+                color: red;
+            }
+            .unsaved {
+                color: $clrGrey;
             }
         }
         .title {
@@ -72,7 +81,9 @@
         grid-template-columns: 35vw 20vw;
         grid-template-rows: 1fr;
         background: #fff;
-        gap: 3vw;
+        gap: 1vw;
+        box-shadow: $los;
+        padding: 1vw;
         .sec-video {
             grid-column: 1;
             grid-row: 1;
@@ -89,9 +100,11 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            background: #ccc;
             height: 70vh;
             .sec-details {
+                .cnt-details::-webkit-scrollbar {
+                    width: 0;
+                }
                 .cnt-details {
                     height: 60vh;
                     overflow-y: scroll;
@@ -107,7 +120,7 @@
                     .cmt {
                         display: grid;
                         align-items: center;
-                        grid-template-columns: 0.1fr 0.9fr;
+                        grid-template-columns: 0.1fr 0.8fr 0.1fr;
                         grid-template-rows: 1fr;
                         h4 {
                             grid-column: 1;
@@ -121,6 +134,10 @@
                         }
                         h5:nth-child(2) {
                             font-weight: 500;
+                        }
+                        i {
+                            grid-column: 3;
+                            grid-row: 1;
                         }
                     }
                 }
