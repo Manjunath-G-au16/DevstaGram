@@ -102,6 +102,27 @@
             justify-content: space-between;
             height: 70vh;
             .sec-details {
+                .title {
+                    h3 {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        i {
+                            color: $clrGrey;
+                            position: relative;
+                            cursor: pointer;
+                            h5 {
+                                position: absolute;
+                                color: $clrWhite;
+                                background: $clrBlack;
+                                transform: translateX(-50%);
+                                margin-top: 5px;
+                                padding: 5px;
+                                border-radius: 5px;
+                            }
+                        }
+                    }
+                }
                 .cnt-details::-webkit-scrollbar {
                     width: 0;
                 }

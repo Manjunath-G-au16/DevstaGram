@@ -9,6 +9,7 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 const VideoHome = () => {
     const [videos, setVideos] = useState([])
     const [more, setMore] = useState([])
+    const [deleteActive, setDeleteActive] = useState([])
     const [video, setVideo] = useState({})
     const [user, setUser] = useState({})
     const [commId, setCommId] = useState("")
@@ -16,6 +17,9 @@ const VideoHome = () => {
     const [likeActive, setLikeActive] = useState(false)
     const [descActive, setDescActive] = useState(false)
     const [replyActive, setReplyActive] = useState(false)
+    const [followStatus, setFollowStatus] = useState(false)
+    const [toolTip, setToolTip] = useState(false)
+    const [toolTipDel, setToolTipDel] = useState(false)
     const [rID, setRID] = useState("")
     const [active, setActive] = useState(true)
     const [loading, setLoading] = useState(true)
@@ -37,6 +41,19 @@ const VideoHome = () => {
         newMore.push(id)
         setMore(newMore)
     }
+    const handleDeleteActive = (id) => {
+        setToolTipDel(!toolTipDel)
+        if (toolTipDel === true) {
+            let newDeleteActive = [...deleteActive]
+            newDeleteActive.push(id)
+            setDeleteActive(newDeleteActive)
+        } else {
+            let newDeleteActive = [...deleteActive]
+            newDeleteActive.pop(id)
+            setDeleteActive(newDeleteActive)
+        }
+    }
+
 
     const fetchVideos = async () => {
         try {
@@ -79,6 +96,12 @@ const VideoHome = () => {
             if (!res.status === 200) {
                 const error = new Error(res.error);
                 throw error;
+            }
+            else {
+                console.log("data", data);
+                if (user.followings.filter(e => e['following'] === data.contentBy).length > 0) {
+                    setFollowStatus(true)
+                }
             }
         } catch (err) {
             console.log(err);
@@ -152,6 +175,25 @@ const VideoHome = () => {
             fetchComments(video._id);
         }
     };
+    const postFollower = async () => {
+        const email = video.contentBy;
+        const res = await fetch("/followers", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email
+            }),
+        });
+        const data = await res.json();
+        if (!data) {
+            console.log("Not Followed");
+        } else {
+            console.log("Followed successfully");
+            setFollowStatus(true)
+        }
+    };
     const postReply = async (id) => {
         const commentID = id;
         const reply = userReply;
@@ -191,6 +233,23 @@ const VideoHome = () => {
             console.log("Comment sent");
             fetchComments(video._id);
             setCommId("")
+        }
+    };
+    const delFollower = async (id) => {
+        const res = await fetch(`/deleteFollower/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+        const data = await res.json();
+        if (!data) {
+            console.log("Unfollowed Unsuccessful");
+        } else {
+            console.log("Unfollowed successfully");
+            setFollowStatus(false)
+            user.followings.length = 0;
+            setToolTip(false);
         }
     };
     const delComment = async (id) => {
@@ -412,7 +471,17 @@ const VideoHome = () => {
                         <div className="sec-cnt">
                             <div className="sec-details">
                                 <div className="title">
-                                    <h3>{video.name}</h3>
+                                    <h3>{video.name}
+                                        {(followStatus === true) ?
+                                            <>
+                                                <span>Following</span>
+                                                <i className="fas fa-ellipsis-v" onClick={() => setToolTip(!toolTip)}>
+                                                    {(toolTip === true) && <h5 onClick={() => delFollower(video.contentBy)}>UnFollow</h5>}
+                                                </i>
+                                            </> :
+                                            <span onClick={postFollower}>Follow</span>
+                                        }
+                                    </h3>
                                 </div>
 
                                 <div className="cnt-details">
@@ -421,11 +490,13 @@ const VideoHome = () => {
                                     </div>
                                     {comments.slice(0).reverse().map((item, index) => {
                                         return (
-                                            <div className="cmt">
+                                            <div className="cmt" key={index}>
                                                 <h4>{[...item.name].reverse().splice(-1)}</h4>
                                                 <h5>{item.name} <span>
                                                     {item.comment}</span></h5>
-                                                <i className="fas fa-trash" onClick={() => delComment(item._id)}></i>
+                                                <i className="fas fa-ellipsis-v" onClick={() => handleDeleteActive(item._id)}>
+                                                    {(deleteActive.includes(item._id) === true) && <h5 onClick={() => delComment(item._id)}>Delete</h5>}
+                                                </i>
                                             </div>
                                         )
                                     })}
