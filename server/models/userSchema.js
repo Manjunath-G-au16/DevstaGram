@@ -11,9 +11,22 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    phone: {
+        type: Number,
+    },
+    bio: {
+        type: String,
+    },
+    website: {
+        type: String,
+    },
     password: {
         type: String,
         required: true,
+    },
+    profilePic: {
+        type: String,
+        default: "https://res.cloudinary.com/modimanju/image/upload/v1630390312/xfgmojksgywzm204cvfl.jpg",
     },
     followers: [
         {

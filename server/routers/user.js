@@ -122,6 +122,19 @@ userRouter.delete("/deleteFollower/:id", Authenticate, async (req, res) => {
         res.status(500).send(err)
     }
 });
+//Edit User
+//--------------------
+userRouter.put("/editUser/:id", Authenticate, async (req, res) => {
+    try {
+        const _id = req.params.id
+        const user = await User.findByIdAndUpdate(_id, req.body, {
+            new: true
+        })
+        res.status(200).send(user)
+    } catch (err) {
+        res.status(500).send(err)
+    }
+});
 //User Logout 
 //--------------------
 userRouter.get("/logout", (req, res) => {
