@@ -37,6 +37,13 @@ const Sidebar = () => {
                         </NavLink>
                     </li>
                     <li className="list">
+                        <NavLink className="nav-link" to="/profile">
+                            <span className="icon">
+                                <i className="fas fa-question-circle"></i></span>
+                            <span className="title">Profile</span>
+                        </NavLink>
+                    </li>
+                    <li className="list">
                         <NavLink className="nav-link" to="/myVideos">
                             <span className="icon">
                                 <i className="fas fa-question-circle"></i></span>

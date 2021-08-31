@@ -1,0 +1,59 @@
+@import "../../../scss/defaults.scss";
+@import "../../../scss/variables.scss";
+
+.profile-container {
+    width: 78vw;
+    height: 50vh;
+    display: grid;
+    grid-template-columns: 28vw 50vw;
+    grid-template-rows: 50vh;
+    overflow: hidden;
+    .profile-img {
+        grid-column: 1;
+        grid-row: 1;
+        // background: #eee;
+        @include grid-center;
+        .img {
+            transform: scale(0.5);
+            aspect-ratio: 1;
+            // background: #ccc;
+            border-radius: 50%;
+            overflow: hidden;
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+    }
+    .profile-cnt {
+        grid-column: 2;
+        grid-row: 1;
+        // background: #ccc;
+        display: grid;
+        grid-template-rows: 10vh 10vh 30vh;
+        grid-template-columns: 50vw;
+        .name-sec {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            grid-column: 1;
+            grid-row: 1;
+            .btn {
+                button {
+                    padding: 5px;
+                    border: 1px solid #dbdbdb;
+                    border-radius: 4px;
+                }
+            }
+        }
+        .followers-sec {
+            width: 25vw;
+            grid-column: 1;
+            grid-row: 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
+}
