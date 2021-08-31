@@ -137,7 +137,7 @@ const UploadVideo = () => {
     // }, [])
     return (
         <>
-            <Heading heading="Upload Video" />
+            <Heading heading="Upload Post" />
             <div className="uploadvideo-sec">
                 <div className="uploadvideo-con">
                     <div className="image">

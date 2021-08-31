@@ -100,6 +100,19 @@
 .onepost {
     width: 78vw;
     @include grid-center;
+    .btn{
+        button{
+            padding: 5px 20px;
+            border: 1px solid #dbdbdb;
+            border-radius: 4px;
+            background: transparent;
+            outline: none;
+            cursor: pointer;
+            i{
+                transform: scale(1.5);
+            }
+        }
+    }
     .sec {
         width: 58vw;
         display: grid;
@@ -134,8 +147,9 @@
                     margin-bottom: 5px;
                     h4 {
                         display: flex;
-                        justify-content: space-between;
+                        gap: 15px;
                         align-items: center;
+                        cursor: pointer;
                         .title-img {
                             width: 30px;
                             height: 30px;

@@ -412,7 +412,7 @@ const VideoHome = () => {
     }, [])
     return (
         <>
-            <Heading heading="Videos" />
+            <Heading heading="Posts" />
             {loading && <div className="loaderx"><ScaleLoader
                 color={"#2b343b"} loading={loading} size={0} /></div>}
             {(active === true) ?
@@ -466,7 +466,7 @@ const VideoHome = () => {
                 </div> :
                 <div className="onepost">
                     <div className="btn">
-                        <button onClick={() => setActive(true)}>Back</button>
+                        <button onClick={() => setActive(true)}><i className="fas fa-long-arrow-alt-left"></i></button>
                     </div>
                     <div className="sec">
                         <div className="sec-video">
@@ -480,15 +480,20 @@ const VideoHome = () => {
                                             <img src={video.profilePic} alt="" />
                                         </div>
                                         {video.name}
-                                        {(followStatus === true) ?
+                                        {(video.contentBy !== user.email) && <>
+                                        
+                                        {
+                                            (followStatus === true) ?
                                             <>
                                                 <span>Following</span>
                                                 <i className="fas fa-ellipsis-v" onClick={() => setToolTip(!toolTip)}>
                                                     {(toolTip === true) && <h5 onClick={() => delFollower(video.contentBy)}>UnFollow</h5>}
                                                 </i>
                                             </> :
-                                            <span onClick={postFollower}>Follow &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                            <span onClick={postFollower}>Follow</span>
+
                                         }
+                                        </>}
                                     </h4>
                                 </div>
 

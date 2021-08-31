@@ -57,7 +57,7 @@ const Profile = () => {
     };
     const fetchPosts = async () => {
         try {
-            const res = await fetch("/contents", {
+            const res = await fetch("/myContents", {
                 method: "GET",
                 headers: {
                     Accept: "application/json",

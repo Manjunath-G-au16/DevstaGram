@@ -39,7 +39,17 @@ contentRouter.get("/myContents", Authenticate, async (req, res) => {
         res.status(500).send(err)
     }
 });
-
+//Display saved Contents 
+//-----------------------------------------
+contentRouter.get("/postsSaved", Authenticate, async (req, res) => {
+    const savedBy = req.rootUser.email
+    try {
+        contents = await Content.find({ saves: { $elemMatch: { savedBy: savedBy } } });
+        res.status(200).send(contents);
+    } catch (err) {
+        res.status(500).send(err)
+    }
+});
 //Upload Content 
 //-----------------------------------------
 contentRouter.post("/uploadContent", Authenticate, async (req, res) => {
