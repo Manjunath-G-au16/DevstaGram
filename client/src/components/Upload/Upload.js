@@ -157,20 +157,6 @@ const UploadVideo = () => {
                     <div className="textarea">
                         <textarea className="description" name="description" placeholder="Description..." onChange={(e) => setDesc(e.target.value)} required></textarea>
                     </div>
-                    <div className="video">
-                        <input type="file" name="video" id="video" accept="video/*" onChange={handleVideo} />
-                        {loadingVideo ? <div className="loader">
-                            <ScaleLoader color={"#2b343b"} loading={loadingVideo} />
-                            Uploading...!
-                        </div> : <>
-                            <video src={videoUrl}></video>
-                            <label htmlFor="video">
-                                <i className="fas fa-cloud-upload-alt"></i>
-                                <h2>Upload Video</h2>
-                            </label>
-                        </>
-                        }
-                    </div>
                 </div>
                 <div className="btn">
                     <button onClick={postContent}>upload</button>

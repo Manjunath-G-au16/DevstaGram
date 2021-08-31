@@ -421,6 +421,10 @@ const VideoHome = () => {
                         return (
                             <div key={index} className="video-con">
                                 <div className="title">
+
+                                    <div className="title-img">
+                                        <img src={item.profilePic} alt="" />
+                                    </div>
                                     <h3>{item.name}</h3>
                                 </div>
                                 <div className="video">
@@ -452,7 +456,7 @@ const VideoHome = () => {
                                 </div>
                                 <h5>{item.likes.length} {(item.likes.length === 1) ? "like" : "likes"} </h5>
                                 <div className="cnt-sec">
-                                    <h5 className={(more.includes(item._id) === true) && "more"}>{item.name} {item.description}</h5>
+                                    <h5 className={(more.includes(item._id) === true) && "more"}>{item.name} <span>{item.description}</span></h5>
                                     <h6 onClick={() => handleMore(item._id)}>{(more.includes(item._id) === true) ? "" : "more"}</h6>
                                 </div>
                             </div>
@@ -461,9 +465,9 @@ const VideoHome = () => {
                     }
                 </div> :
                 <div className="onepost">
-                    {/* <div className="btn">
+                    <div className="btn">
                         <button onClick={() => setActive(true)}>Back</button>
-                    </div> */}
+                    </div>
                     <div className="sec">
                         <div className="sec-video">
                             <img src={video.url} alt="" />
@@ -471,7 +475,11 @@ const VideoHome = () => {
                         <div className="sec-cnt">
                             <div className="sec-details">
                                 <div className="title">
-                                    <h3>{video.name}
+                                    <h4>
+                                        <div className="title-img">
+                                            <img src={video.profilePic} alt="" />
+                                        </div>
+                                        {video.name}
                                         {(followStatus === true) ?
                                             <>
                                                 <span>Following</span>
@@ -479,19 +487,27 @@ const VideoHome = () => {
                                                     {(toolTip === true) && <h5 onClick={() => delFollower(video.contentBy)}>UnFollow</h5>}
                                                 </i>
                                             </> :
-                                            <span onClick={postFollower}>Follow</span>
+                                            <span onClick={postFollower}>Follow &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                                         }
-                                    </h3>
+                                    </h4>
                                 </div>
 
                                 <div className="cnt-details">
+
                                     <div className="cnt-sec">
-                                        <h5 className="more">{video.name} <span>{video.description}</span> </h5>
+                                        <h5 className="more">
+                                            <div className="cnt-img">
+                                                <img src={video.profilePic} alt="" />
+                                            </div>
+                                            <div className="cnt-txt">
+                                                {video.name} <span>{video.description}</span>
+                                            </div>
+                                        </h5>
                                     </div>
                                     {comments.slice(0).reverse().map((item, index) => {
                                         return (
                                             <div className="cmt" key={index}>
-                                                <h4>{[...item.name].reverse().splice(-1)}</h4>
+                                                <h4><div className="cmt-img"><img src={item.profilePic} alt="" /></div></h4>
                                                 <h5>{item.name} <span>
                                                     {item.comment}</span></h5>
                                                 <i className="fas fa-ellipsis-v" onClick={() => handleDeleteActive(item._id)}>
@@ -510,7 +526,7 @@ const VideoHome = () => {
                                     onChange={(e) => setUserComment(e.target.value)}
                                     required
                                 />
-                                <button disabled={userComment.length < 1} onClick={postComment}>post</button>
+                                <button disabled={userComment.length < 1} onClick={postComment}>Post</button>
                             </div>
                         </div>
                     </div>

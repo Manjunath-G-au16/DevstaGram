@@ -15,6 +15,7 @@ const Profile = () => {
         bio: "",
         website: "",
     })
+    const [posts, setPosts] = useState([])
     const [userFollowers, setUserFollowers] = useState([])
     const [userFollowings, setUserFollowings] = useState([])
     const [loading, setLoading] = useState(true)
@@ -52,6 +53,27 @@ const Profile = () => {
         } catch (err) {
             console.log(err);
             history.push("/");
+        }
+    };
+    const fetchPosts = async () => {
+        try {
+            const res = await fetch("/contents", {
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            });
+            const data = await res.json();
+            console.log(data);
+            setPosts(data);
+            if (!res.status === 200) {
+                const error = new Error(res.error);
+                throw error;
+            }
+        } catch (err) {
+            console.log(err);
         }
     };
     const handleImg = (e) => {
@@ -117,12 +139,13 @@ const Profile = () => {
 
     useEffect(() => {
         authenticate();
+        fetchPosts();
     }, [])
     return (
         <>
             <Heading heading={"Profile"} />
-            {/* {loading && <div className="loaderx"><ScaleLoader
-                color={"#2b343b"} loading={loading} size={0} /></div>} */}
+            {loading && <div className="loaderx"><ScaleLoader
+                color={"#2b343b"} loading={loading} size={0} /></div>}
             <div className="profile-container">
                 <div className="profile-img">
                     <div className="img">
@@ -137,7 +160,7 @@ const Profile = () => {
                         </div>
                     </div>
                     <div className="followers-sec">
-                        <h4><span>10</span> posts</h4>
+                        <h4><span>{posts.length}</span> {(posts.length === 1) ? "post" : "posts"}</h4>
                         <h4><span>{userFollowers.length}</span> {(userFollowers.length === 1) ? "follower" : "followers"}</h4>
                         <h4><span>{userFollowings.length}</span> {(userFollowings.length === 1) ? "following" : "followings"}</h4>
                     </div>
@@ -150,6 +173,25 @@ const Profile = () => {
                         <button><a href={`tel:+${user.phone}`}>Phone</a></button>
                     </div>
                 </div>
+            </div>
+            <div className="post-container">
+                {posts.map((item, index) => {
+                    return (
+                        <div className="post-sec">
+                            <img src={item.url} alt="" />
+                            <div className="details-sec">
+                                <h3>
+                                    {item.likes.length}
+                                     <i className="fas fa-heart"></i>
+                                </h3>
+                                <h3>
+                                    {item.saves.length}
+                                     <i className="fas fa-bookmark"></i>
+                                </h3>
+                            </div>
+                        </div>
+                    )
+                })}
             </div>
             <Modal
                 isOpen={modalIsOpen}
@@ -204,6 +246,7 @@ const Profile = () => {
                     </div>
                 </div>
             </Modal>
+
         </>
     )
 }
