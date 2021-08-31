@@ -10,12 +10,13 @@ commentRouter.use(express.json())
 commentRouter.post("/uploadComment", Authenticate, async (req, res) => {
     const name = req.rootUser.name
     const email = req.rootUser.email
+    const profilePic = req.rootUser.profilePic
     const { videoID, comment } = req.body;
     if (!comment) {
         return res.status(422).json({ Error: "plz fill the fields properly" });
     }
     try {
-        const userComment = new Comment({ name, email, videoID, comment });
+        const userComment = new Comment({ name, email, videoID, comment, profilePic });
         await userComment.save();
         res.status(201).json({ message: "Comment uploaded successfully" });
     } catch (err) {

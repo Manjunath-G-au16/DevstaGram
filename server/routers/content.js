@@ -45,12 +45,13 @@ contentRouter.get("/myContents", Authenticate, async (req, res) => {
 contentRouter.post("/uploadContent", Authenticate, async (req, res) => {
     const name = req.rootUser.name
     const contentBy = req.rootUser.email
+    const profilePic = req.rootUser.profilePic
     const { description, url } = req.body;
     if (!description || !url) {
         return res.status(422).json({ Error: "plz fill the fields properly" });
     }
     try {
-        const content = new Content({ name, contentBy, description, url });
+        const content = new Content({ name, contentBy, description, url, profilePic });
         await content.save();
         res.status(201).json({ message: "Content uploaded successfully" });
     } catch (err) {

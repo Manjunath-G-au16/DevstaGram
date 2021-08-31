@@ -39,7 +39,10 @@ const contentSchema = new mongoose.Schema({
             },
         },
     ],
-
+    profilePic: {
+        type: String,
+        required: true,
+    },
 });
 //Likes Storing function
 //-------------------------
